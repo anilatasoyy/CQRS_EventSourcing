@@ -33,10 +33,12 @@ public class RestoreDbController {
         try {
             commandDispatcher.send(new RestoreReadDbCommand());
             return new ResponseEntity<>(new BaseResponse("Read database restore request completed successfully!"), HttpStatus.OK);
-        } catch (IllegalStateException e) {
-            logger.log(Level.WARNING, MessageFormat.format("Client made a bad request - {0}.", e.toString()));
-            return new ResponseEntity<>(new BaseResponse(e.toString()), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
+        }  catch (Exception e) {
+
+            if (e instanceof IllegalStateException) {
+                logger.log(Level.WARNING, MessageFormat.format("Client made a bad request - {0}.", e.toString()));
+                return new ResponseEntity<>(new BaseResponse(e.toString()), HttpStatus.BAD_REQUEST);
+            }
             var safeErrorMessage = "Error while processing request to restore read database";
             logger.log(Level.SEVERE, safeErrorMessage, e);
             return new ResponseEntity<>(new BaseResponse(safeErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
