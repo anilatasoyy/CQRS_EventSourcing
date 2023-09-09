@@ -4,7 +4,6 @@ import com.techbank.account.cmd.api.commands.CloseAccountCommand;
 import com.techbank.account.common.dto.BaseResponse;
 import com.techbank.cqrs.core.exceptions.AggregateNotFoundException;
 import com.techbank.cqrs.core.infrastructure.CommandDispatcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,8 +21,12 @@ public class CloseAccountRestController {
 
     private final Logger logger = Logger.getLogger(CloseAccountRestController.class.getName());
 
-    @Autowired
-    private CommandDispatcher commandDispatcher;
+
+    private final CommandDispatcher commandDispatcher;
+
+    public CloseAccountRestController(CommandDispatcher commandDispatcher) {
+        this.commandDispatcher = commandDispatcher;
+    }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<BaseResponse> closeAccount(@PathVariable(value = "id") String id){
@@ -32,14 +35,18 @@ public class CloseAccountRestController {
             return new ResponseEntity<>(new BaseResponse("Bank account closure request successfully completed!"), HttpStatus.OK);
 
         }
-        catch (IllegalStateException | AggregateNotFoundException e) {
-            logger.log(Level.WARNING, MessageFormat.format("Client made a bad request - {0}.", e.toString()));
-            return new ResponseEntity<>(new BaseResponse(e.toString()), HttpStatus.BAD_REQUEST);
+         catch (Exception e) {
 
-        } catch (Exception e) {
-            var safeErrorMessage = MessageFormat.format("Error while processing request to close bank account with id - {0}.", id);
-            logger.log(Level.SEVERE, safeErrorMessage, e);
-            return new ResponseEntity<>(new BaseResponse(safeErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            if (e instanceof IllegalStateException || e instanceof  AggregateNotFoundException) {
+
+                logger.log(Level.WARNING, MessageFormat.format("Client made a bad request - {0}.", e.toString()));
+                return new ResponseEntity<>(new BaseResponse(e.toString()), HttpStatus.BAD_REQUEST);
+            }
+            else {
+                var safeErrorMessage = MessageFormat.format("Error while processing request to close bank account with id - {0}.", id);
+                logger.log(Level.SEVERE, safeErrorMessage, e);
+                return new ResponseEntity<>(new BaseResponse(safeErrorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
     }

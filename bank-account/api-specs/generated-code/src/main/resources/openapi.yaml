@@ -1,0 +1,268 @@
+openapi: 3.0.0
+info:
+  title: TechBank API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /api/v1/openBankAccount:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenAccountCommand'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenAccountResponse'
+          description: Bank account created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Create a new bank account
+      x-content-type: application/json
+      x-accepts: application/json
+  /api/v1/closeBankAccount/{id}:
+    delete:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+          description: Bank account closed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Close a bank account
+      x-accepts: application/json
+  /api/v1/restoreReadDb:
+    post:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+          description: Read database restored successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Restore the read database
+      x-accepts: application/json
+  /api/v1/withdrawFunds/{id}:
+    put:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawFundsCommand'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+          description: Funds withdrawn successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Withdraw funds from a bank account
+      x-content-type: application/json
+      x-accepts: application/json
+  /api/v1/bankAccountLookup:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountLookupResponse'
+          description: Bank accounts retrieved successfully
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: No content
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get all bank accounts
+      x-accepts: application/json
+  /api/v1/bankAccountLookup/byId/{id}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountLookupResponse'
+          description: Bank account retrieved successfully
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: No content
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get a bank account by ID
+      x-accepts: application/json
+  /api/v1/bankAccountLookup/byHolder/{accountHolder}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: accountHolder
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountLookupResponse'
+          description: Bank account retrieved successfully
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: No content
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get a bank account by holder
+      x-accepts: application/json
+  /api/v1/bankAccountLookup/withBalance/{equalityType}/{balance}:
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: equalityType
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: balance
+        required: true
+        schema:
+          type: number
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountLookupResponse'
+          description: Bank accounts retrieved successfully
+        "204":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+          description: No content
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Internal server error
+      summary: Get bank accounts by balance
+      x-accepts: application/json
+components:
+  schemas:
+    OpenAccountCommand:
+      type: object
+    OpenAccountResponse:
+      type: object
+    Error:
+      type: object
+    WithdrawFundsCommand:
+      type: object
+    BaseResponse:
+      type: object
+    AccountLookupResponse:
+      type: object
+    EmptyResponse:
+      type: object

@@ -1,4 +1,4 @@
-package com.techbank.account.query.api.cotroller;
+package com.techbank.account.query.api.controller;
 
 import com.techbank.account.query.api.dto.AccountLookupResponse;
 import com.techbank.account.query.api.dto.EqualityType;
